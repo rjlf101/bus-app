@@ -7,7 +7,6 @@ function App() {
   const [arrivals, setArrivals] = useState<TfLArrival[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [stopName, setStopName] = useState<string>('');
 
   const loadArrivals = async () => {
@@ -15,7 +14,6 @@ function App() {
       setError(null);
       const data = await fetchBusArrivals();
       setArrivals(data);
-      setLastUpdate(new Date());
       
       // Get stop name from first arrival
       if (data.length > 0) {
@@ -41,27 +39,37 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Group arrivals by route
+  // Group arrivals by route and limit to 3 per route
   const groupedArrivals: GroupedArrivals = arrivals.reduce((acc, arrival) => {
     const route = arrival.lineName;
     if (!acc[route]) {
       acc[route] = [];
     }
-    acc[route].push(arrival);
+    if (acc[route].length < 3) {
+      acc[route].push(arrival);
+    }
     return acc;
   }, {} as GroupedArrivals);
 
-  // Sort routes numerically/alphabetically
-  const sortedRoutes = Object.keys(groupedArrivals).sort((a, b) => {
-    const numA = parseInt(a);
-    const numB = parseInt(b);
-    
-    if (!isNaN(numA) && !isNaN(numB)) {
-      return numA - numB;
-    }
-    
-    return a.localeCompare(b);
-  });
+  // Create a flat list of arrivals with route info, maintaining order
+  const displayArrivals: Array<{ route: string; arrival: TfLArrival }> = [];
+  
+  Object.keys(groupedArrivals)
+    .sort((a, b) => {
+      const numA = parseInt(a);
+      const numB = parseInt(b);
+      
+      if (!isNaN(numA) && !isNaN(numB)) {
+        return numA - numB;
+      }
+      
+      return a.localeCompare(b);
+    })
+    .forEach((route) => {
+      groupedArrivals[route].forEach((arrival) => {
+        displayArrivals.push({ route, arrival });
+      });
+    });
 
   if (loading) {
     return (
@@ -85,36 +93,18 @@ function App() {
   return (
     <div className="container">
       <header className="header">
-        <h1>Bus Arrivals</h1>
-        {stopName && <h2 className="stop-name">{stopName}</h2>}
-        {lastUpdate && (
-          <p className="last-update">
-            Last updated: {lastUpdate.toLocaleTimeString()}
-          </p>
-        )}
+        {stopName && <h1>{stopName}</h1>}
       </header>
 
       {arrivals.length === 0 ? (
         <div className="no-arrivals">No buses expected at this stop</div>
       ) : (
         <div className="arrivals-container">
-          {sortedRoutes.map((route) => (
-            <div key={route} className="route-group">
-              <div className="route-header">
-                <span className="route-number">{route}</span>
-              </div>
-              <div className="arrivals-list">
-                {groupedArrivals[route].slice(0, 3).map((arrival) => (
-                  <div key={arrival.id} className="arrival-item">
-                    <div className="arrival-destination">
-                      {arrival.destinationName}
-                    </div>
-                    <div className="arrival-time">
-                      {formatCountdown(arrival.timeToStation)}
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {displayArrivals.map(({ route, arrival }) => (
+            <div key={arrival.id} className="arrival-card">
+              <div className="route-number">{route}</div>
+              <div className="destination">{arrival.destinationName}</div>
+              <div className="time-badge">{formatCountdown(arrival.timeToStation)}</div>
             </div>
           ))}
         </div>
