@@ -5,12 +5,10 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #2c3e50;
+  background: #111625;
   min-height: 100vh;
   padding: 40px 20px;
 }
@@ -26,44 +24,54 @@ body {
 }
 
 .header h1 {
-  color: #ffffff;
+  color: #FFF1CF;
   font-size: 3rem;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.last-update {
+  color: #FFF1CF;
+  font-size: 0.9rem;
+  font-weight: 300;
+  opacity: 0.7;
 }
 
 .loading,
 .error,
 .no-arrivals {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 241, 207, 0.05);
   padding: 40px;
   border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid #FFF1CF;
   text-align: center;
   font-size: 1.2rem;
-  color: #ffffff;
+  color: #FFF1CF;
 }
 
 .error {
-  border-color: #e74c3c;
-  background: rgba(231, 76, 60, 0.1);
+  border-color: #FF6B6B;
+  background: rgba(255, 107, 107, 0.1);
+  color: #FF6B6B;
 }
 
 .retry-button {
   margin-top: 20px;
   padding: 12px 30px;
   font-size: 1rem;
-  background: #ffffff;
-  color: #2c3e50;
+  background: #FFF1CF;
+  color: #111625;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
   font-weight: 600;
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .retry-button:hover {
-  background: #ecf0f1;
+  background: #e6d9b8;
   transform: translateY(-2px);
 }
 
@@ -74,8 +82,8 @@ body {
 }
 
 .arrival-card {
-  background: #2c3e50;
-  border: 3px solid #ffffff;
+  background: #111625;
+  border: 3px solid #FFF1CF;
   border-radius: 0;
   padding: 25px 30px;
   display: flex;
@@ -84,13 +92,27 @@ body {
   transition: all 0.2s;
 }
 
+.arrival-card.urgent {
+  background: #FF6B6B;
+}
+
+.arrival-card.urgent .route-number,
+.arrival-card.urgent .destination {
+  color: #111625;
+}
+
+.arrival-card.urgent .time-badge {
+  background: #111625;
+  color: #FFF1CF;
+}
+
 .arrival-card:hover {
   transform: translateX(5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 241, 207, 0.2);
 }
 
 .route-number {
-  color: #ffffff;
+  color: #FFF1CF;
   font-size: 4rem;
   font-weight: 700;
   line-height: 1;
@@ -100,16 +122,17 @@ body {
 }
 
 .destination {
-  color: #ffffff;
+  color: #FFF1CF;
   font-size: 1.8rem;
   font-weight: 400;
+  font-stretch: condensed;
   flex: 1;
   line-height: 1.3;
 }
 
 .time-badge {
-  background: #f5e6d3;
-  color: #2c3e50;
+  background: #FFF1CF;
+  color: #111625;
   font-size: 1.6rem;
   font-weight: 600;
   padding: 15px 25px;
@@ -127,6 +150,10 @@ body {
 
   .header h1 {
     font-size: 2rem;
+  }
+
+  .last-update {
+    font-size: 0.8rem;
   }
 
   .arrival-card {
@@ -153,6 +180,10 @@ body {
 @media (max-width: 480px) {
   .header h1 {
     font-size: 1.5rem;
+  }
+
+  .last-update {
+    font-size: 0.75rem;
   }
 
   .arrival-card {

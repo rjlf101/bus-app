@@ -8,12 +8,14 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [stopName, setStopName] = useState<string>('');
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   const loadArrivals = async () => {
     try {
       setError(null);
       const data = await fetchBusArrivals();
       setArrivals(data);
+      setLastUpdate(new Date());
       
       // Get stop name from first arrival
       if (data.length > 0) {
@@ -94,19 +96,32 @@ function App() {
     <div className="container">
       <header className="header">
         {stopName && <h1>{stopName}</h1>}
+        {lastUpdate && (
+          <p className="last-update">
+            Last updated: {lastUpdate.toLocaleTimeString()}
+          </p>
+        )}
       </header>
 
       {arrivals.length === 0 ? (
         <div className="no-arrivals">No buses expected at this stop</div>
       ) : (
         <div className="arrivals-container">
-          {displayArrivals.map(({ route, arrival }) => (
-            <div key={arrival.id} className="arrival-card">
-              <div className="route-number">{route}</div>
-              <div className="destination">{arrival.destinationName}</div>
-              <div className="time-badge">{formatCountdown(arrival.timeToStation)}</div>
-            </div>
-          ))}
+          {displayArrivals.map(({ route, arrival }) => {
+            const minutes = Math.floor(arrival.timeToStation / 60);
+            const isUrgent = minutes <= 5;
+            
+            return (
+              <div 
+                key={arrival.id} 
+                className={`arrival-card ${isUrgent ? 'urgent' : ''}`}
+              >
+                <div className="route-number">{route}</div>
+                <div className="destination">{arrival.destinationName}</div>
+                <div className="time-badge">{formatCountdown(arrival.timeToStation)}</div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
